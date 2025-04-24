@@ -1,0 +1,13 @@
+version: "3.2"
+
+services:
+  api:
+    build:
+      context: ./neural_future_backend
+      dockerfile: Dockerfile
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./media:/app/media
+      - ./static:/app/static
+      - ./db:/app/db
