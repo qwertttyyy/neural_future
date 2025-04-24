@@ -3,7 +3,6 @@ from rest_framework import serializers
 
 from metrics.models import UserAnswer
 from npc.models import Location
-from npc.serializers import QuestionSerializer
 
 
 class LocationSerializer(serializers.ModelSerializer):
@@ -29,7 +28,6 @@ class UserAnswerListSerializer(serializers.ListSerializer):
 
 
 class UserAnswerSerializer(serializers.ModelSerializer):
-
     class Meta:
         model = UserAnswer
         fields = ('question', 'answer')

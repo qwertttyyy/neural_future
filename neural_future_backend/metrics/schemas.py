@@ -26,21 +26,15 @@ user_answer_create_schema = {
             summary='Ответ с созданными/обновлёнными объектами',
             value=[
                 {
-                    "id": 10,
-                    "user": "mikhail",
-                    "question": "Как тебя зовут?",
+                    "id": 1,
                     "answer": "Меня зовут Михаил",
                 },
                 {
-                    "id": 11,
-                    "user": "mikhail",
-                    "question": "Сколько тебе лет?",
+                    "id": 2,
                     "answer": "25",
                 },
                 {
-                    "id": 12,
-                    "user": "mikhail",
-                    "question": "Откуда ты?",
+                    "id": 3,
                     "answer": "Из Москвы",
                 },
             ],
