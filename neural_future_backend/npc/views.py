@@ -19,10 +19,3 @@ class NPCQuestionsByLocationView(generics.ListAPIView):
         )
         serializer = self.get_serializer(queryset, many=True)
         return Response(serializer.data)
-
-    # def get(self, request, npc_id, location_id):
-    #     questions = Question.objects.filter(
-    #         npc_id=npc_id, location_id=location_id
-    #     )
-    #     serializer = QuestionSerializer(questions, many=True)
-    #     return Response(serializer.data, status=status.HTTP_200_OK)

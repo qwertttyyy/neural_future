@@ -11,6 +11,7 @@ DEBUG = True
 ALLOWED_HOSTS = ['*']
 
 INSTALLED_APPS = [
+    'daphne',
     "django.contrib.admin",
     "django.contrib.auth",
     "django.contrib.contenttypes",
@@ -21,6 +22,7 @@ INSTALLED_APPS = [
     'users',
     'metrics',
     'npc',
+    'game',
     'drf_spectacular',
 ]
 
@@ -51,7 +53,8 @@ TEMPLATES = [
     },
 ]
 
-WSGI_APPLICATION = "neural_future_backend.wsgi.application"
+# WSGI_APPLICATION = "neural_future_backend.wsgi.application"
+ASGI_APPLICATION = 'neural_future_backend.asgi.application'
 
 # Database
 # https://docs.djangoproject.com/en/5.2/ref/settings/#databases
@@ -118,4 +121,10 @@ SPECTACULAR_SETTINGS = {
     'DESCRIPTION': 'Апи бэк нейросеть будущего',
     'VERSION': '1.0.0',
     'SERVE_INCLUDE_SCHEMA': False,
+}
+
+CHANNEL_LAYERS = {
+    'default': {
+        'BACKEND': "channels.layers.InMemoryChannelLayer",
+    },
 }
