@@ -1,6 +1,8 @@
 from django.contrib.auth.models import AbstractUser
 from django.db import models
 
+from users.validators import SVGOrRasterImageValidator
+
 
 class Weapon(models.Model):
     name = models.CharField(max_length=100)
@@ -14,7 +16,12 @@ class Weapon(models.Model):
 
 
 class CustomUser(AbstractUser):
-    icon = models.ImageField(null=True, blank=True, upload_to='users_icons/')
+    icon = models.FileField(
+        upload_to="users_icons/",
+        validators=[SVGOrRasterImageValidator()],
+        null=True,
+        blank=True,
+    )
     weapon = models.OneToOneField(
         Weapon, on_delete=models.SET_NULL, null=True, blank=True
     )

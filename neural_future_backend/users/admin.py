@@ -75,10 +75,11 @@ class CustomUserAdmin(BaseUserAdmin):
     )
 
     def avatar(self, obj):
-        if obj.icon:
-            return format_html(
-                '<img src="{}" style="max-height:50px;" />', obj.icon.url
-            )
-        return "—"
+        if not obj.icon:
+            return "—"
+        url = obj.icon.url
+        if url.lower().endswith(".svg"):
+            return format_html('<img src="{}" style="height:50px;" />', url)
+        return format_html('<img src="{}" style="height:50px;" />', url)
 
     avatar.short_description = "Icon"
