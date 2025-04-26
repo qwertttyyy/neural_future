@@ -23,29 +23,16 @@ class PlayerConsumer(AsyncJsonWebsocketConsumer):
         Ожидаем { "x": 123, "y": 456 }
         Добавляем user_id и отправляем всем
         """
-        x = content.get('x')
-        y = content.get('y')
-        if x is None or y is None:
-            return
 
-        await self.channel_layer.group_send(
-            self.GROUP_NAME,
-            {
-                'type': 'player.position',
-                'user_id': self.user_id,
-                'x': x,
-                'y': y,
-            },
-        )
+        payload = {
+            'type': 'player.position',
+            'user_id': self.user_id,
+        }
+        payload.update(content)
+        await self.channel_layer.group_send(self.GROUP_NAME, payload)
 
     async def player_position(self, event):
         if event["user_id"] == self.user_id:
             return
-
-        await self.send_json(
-            {
-                "user_id": event["user_id"],
-                "x": event["x"],
-                "y": event["y"],
-            }
-        )
+        del event["type"]
+        await self.send_json(event)
