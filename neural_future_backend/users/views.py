@@ -1,10 +1,12 @@
 from drf_spectacular.utils import extend_schema
 from rest_framework import generics, permissions, parsers
 
+from .models import Weapon
 from .serializers import (
     UserRegisterSerializer,
     PlayerSerializer,
     PlayerUpdateSerializer,
+    WeaponSerializer,
 )
 
 
@@ -31,3 +33,9 @@ class PlayerMeAPIView(generics.RetrieveUpdateAPIView):
         if self.request.method in ("PATCH", "PUT"):
             return PlayerUpdateSerializer
         return PlayerSerializer
+
+
+@extend_schema(tags=["Игроки"])
+class WeaponListAPIView(generics.ListAPIView):
+    serializer_class = WeaponSerializer
+    queryset = Weapon.objects.all()

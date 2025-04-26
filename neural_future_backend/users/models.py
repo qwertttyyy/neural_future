@@ -1,12 +1,17 @@
 from django.contrib.auth.models import AbstractUser
 from django.db import models
 
-from users.validators import SVGOrRasterImageValidator
+from core.validators import SVGOrRasterImageValidator
 
 
 class Weapon(models.Model):
     name = models.CharField(max_length=100)
-    img = models.ImageField(upload_to='weapons/')
+    img = models.FileField(
+        upload_to="weapons/",
+        validators=[SVGOrRasterImageValidator()],
+        null=True,
+        blank=True,
+    )
     width = models.PositiveSmallIntegerField()
     height = models.PositiveSmallIntegerField()
     damage = models.PositiveSmallIntegerField()

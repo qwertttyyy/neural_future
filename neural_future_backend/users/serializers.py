@@ -9,7 +9,7 @@ User = get_user_model()
 class WeaponSerializer(serializers.ModelSerializer):
     class Meta:
         model = Weapon
-        fields = ("id", "name")
+        fields = ("id", "name", 'img', 'width', 'height', 'damage')
 
 
 class UserRegisterSerializer(serializers.ModelSerializer):
@@ -42,7 +42,7 @@ class PlayerUpdateSerializer(serializers.ModelSerializer):
         required=False,
         allow_null=True,
     )
-    icon = serializers.ImageField(required=False, allow_null=True)
+    icon = serializers.FileField(required=False, allow_null=True)
 
     class Meta:
         model = User
