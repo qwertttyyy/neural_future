@@ -27,6 +27,6 @@ class CustomUser(AbstractUser):
         null=True,
         blank=True,
     )
-    weapon = models.OneToOneField(
+    weapon = models.ForeignKey(
         Weapon, on_delete=models.SET_NULL, null=True, blank=True
     )
