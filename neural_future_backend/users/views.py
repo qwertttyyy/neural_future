@@ -43,6 +43,7 @@ class WeaponListAPIView(generics.ListAPIView):
     queryset = Weapon.objects.all()
 
 
+@extend_schema(tags=["Игроки"])
 class CharacterClassListAPIView(generics.ListAPIView):
     queryset = CharacterClass
     serializer_class = CharacterClassSerializer

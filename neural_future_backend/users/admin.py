@@ -1,15 +1,15 @@
 # admin.py
+
 from django.contrib import admin
 from django.contrib.auth import get_user_model
 from django.contrib.auth.admin import UserAdmin as BaseUserAdmin
 from django.utils.html import format_html
 
-from .models import Weapon
+from .models import Weapon, CharacterClass
 
 User = get_user_model()
 
 
-# ────────────────────────────── Weapon ──────────────────────────────
 @admin.register(Weapon)
 class WeaponAdmin(admin.ModelAdmin):
     list_display = ("id", "name", "damage", "size", "preview")
@@ -31,14 +31,33 @@ class WeaponAdmin(admin.ModelAdmin):
     preview.short_description = "Image"
 
 
-# ──────────────────────── CustomUser (Player) ───────────────────────
+@admin.register(CharacterClass)
+class CharacterClassAdmin(admin.ModelAdmin):
+    list_display = ("id", "name", "sprite_preview")
+    search_fields = ("name",)
+    readonly_fields = ("sprite_preview",)
+
+    def sprite_preview(self, obj):
+        if obj.sprite_url:
+            return format_html(
+                '<img src="{}" style="max-height:50px;" />', obj.sprite_url
+            )
+        return "—"
+
+    sprite_preview.short_description = "Sprite"
+
+
 @admin.register(User)
 class CustomUserAdmin(BaseUserAdmin):
     list_display = (
         "id",
         "username",
         "email",
+        "character_class",
         "weapon",
+        "hp",
+        "experience",
+        "level",
         "avatar",
         "is_staff",
         "is_active",
@@ -48,7 +67,19 @@ class CustomUserAdmin(BaseUserAdmin):
     fieldsets = (
         (None, {"fields": ("username", "password")}),
         ("Personal info", {"fields": ("first_name", "last_name", "email")}),
-        ("Game data", {"fields": ("icon", "avatar", "weapon")}),
+        (
+            "Game data",
+            {
+                "fields": (
+                    "icon",
+                    "avatar",
+                    "character_class",
+                    "weapon",
+                    ("hp", "experience", "level"),
+                    "story",
+                )
+            },
+        ),
         (
             "Permissions",
             {
@@ -78,8 +109,6 @@ class CustomUserAdmin(BaseUserAdmin):
         if not obj.icon:
             return "—"
         url = obj.icon.url
-        if url.lower().endswith(".svg"):
-            return format_html('<img src="{}" style="height:50px;" />', url)
-        return format_html('<img src="{}" style="height:50px;" />', url)
+        return format_html('<img src="{}" style="max-height:50px;" />', url)
 
     avatar.short_description = "Icon"
