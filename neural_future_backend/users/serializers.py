@@ -9,7 +9,15 @@ User = get_user_model()
 class WeaponSerializer(serializers.ModelSerializer):
     class Meta:
         model = Weapon
-        fields = ("id", "name", 'weapon_img', 'width', 'height', 'damage')
+        fields = (
+            "id",
+            "name",
+            'weapon_img',
+            'projectile_img',
+            'width',
+            'height',
+            'damage',
+        )
 
 
 class UserRegisterSerializer(serializers.ModelSerializer):

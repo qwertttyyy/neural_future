@@ -7,5 +7,10 @@ urlpatterns = [
     path('auth/', auth_views.obtain_auth_token),
     path("register/", views.RegisterAPIView.as_view(), name="register"),
     path("me/", views.PlayerMeAPIView.as_view(), name="player-me"),
-    path('weapons/', views.WeaponListAPIView.as_view(), name='weapons=list'),
+    path('weapons/', views.WeaponListAPIView.as_view(), name='weapons-list'),
+    path(
+        'classes/',
+        views.CharacterClassListAPIView.as_view(),
+        name='classes-list',
+    ),
 ]
