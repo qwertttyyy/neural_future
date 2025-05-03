@@ -12,23 +12,39 @@ User = get_user_model()
 
 @admin.register(Weapon)
 class WeaponAdmin(admin.ModelAdmin):
-    list_display = ("id", "name", "damage", "size", "preview")
+    list_display = (
+        "id",
+        "name",
+        "damage",
+        "size",
+        "weapon_preview",
+        'projectile_preview',
+    )
     search_fields = ("name",)
-    readonly_fields = ("preview",)
+    readonly_fields = ("weapon_preview", 'projectile_preview')
 
     def size(self, obj):
         return f"{obj.width}×{obj.height}"
 
     size.short_description = "Size"
 
-    def preview(self, obj):
-        if obj.img:
+    def weapon_preview(self, obj):
+        if obj.weapon_img:
             return format_html(
-                '<img src="{}" style="max-height:50px;" />', obj.img.url
+                '<img src="{}" style="max-height:50px;" />', obj.weapon_img.url
             )
         return "—"
 
-    preview.short_description = "Image"
+    def projectile_preview(self, obj):
+        if obj.projectile_img:
+            return format_html(
+                '<img src="{}" style="max-height:50px;" />',
+                obj.projectile_img.url,
+            )
+        return "—"
+
+    weapon_preview.short_description = "Image"
+    projectile_preview.short_description = "Projectile"
 
 
 @admin.register(CharacterClass)
