@@ -3,6 +3,7 @@ from rest_framework import serializers
 
 from metrics.models import UserAnswer
 from npc.models import Location
+from .tasks import generate_story_task
 
 
 class LocationSerializer(serializers.ModelSerializer):
@@ -17,13 +18,18 @@ class UserAnswerListSerializer(serializers.ListSerializer):
     def create(self, validated_data):
         user = self.context['request'].user
         answers = []
+        pairs = []
         for item in validated_data:
+            question = item['question']
+            answer = item['answer']
             qa, created = UserAnswer.objects.update_or_create(
                 user=user,
-                question=item['question'],
-                defaults={'answer': item['answer']},
+                question=question,
+                defaults={'answer': answer},
             )
             answers.append(qa)
+            pairs.append(f'Q: {question} A: {answer}')
+        generate_story_task.delay(user_id=user.id, q_a_pairs=pairs)
         return answers
 
 

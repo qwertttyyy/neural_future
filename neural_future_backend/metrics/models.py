@@ -20,3 +20,8 @@ class UserAnswer(models.Model):
                 fields=['question', 'user'], name='unique-user-answer'
             )
         ]
+
+
+class NNAnswer(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    answer = models.TextField()

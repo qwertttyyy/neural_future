@@ -1,3 +1,4 @@
+import os
 from pathlib import Path
 
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -130,3 +131,11 @@ CHANNEL_LAYERS = {
 }
 
 AUTH_USER_MODEL = "users.CustomUser"
+
+CELERY_BROKER_URL = f'redis://redis:6379/0'
+CELERY_RESULT_BACKEND = f'redis://redis:6379/0'
+
+
+DEEPSEEK_API_KEY = os.getenv('DEEPSEEK_API_KEY')
+if not DEEPSEEK_API_KEY:
+    raise ValueError("DEEPSEEK_API_KEY must be set")

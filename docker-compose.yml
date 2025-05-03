@@ -1,13 +1,40 @@
-version: "3.2"
+version: "3.8"
 
 services:
   api:
     build:
       context: ./neural_future_backend
       dockerfile: Dockerfile
+    env_file:
+      - .env
     ports:
       - "8000:8000"
     volumes:
       - ./media:/app/media
       - ./static:/app/static
-      - ./db:/app/db
+      - ./neural_future_backend/db:/app/db
+    depends_on:
+      - redis
+      - celery
+
+  redis:
+    image: redis:latest
+    ports:
+      - '6379:6379'
+    volumes:
+      - redis_data:/data
+
+  celery:
+    build:
+      context: ./neural_future_backend
+      dockerfile: Dockerfile
+    env_file:
+      - .env
+    command: celery -A neural_future_backend worker -l info
+    depends_on:
+      - redis
+    volumes:
+      - ./neural_future_backend/db:/app/db
+
+volumes:
+  redis_data:
