@@ -20,6 +20,13 @@ class Weapon(models.Model):
         return self.name
 
 
+class CharacterClass(models.Model):
+    name = models.CharField(max_length=50, unique=True)
+
+    def __str__(self):
+        return self.name
+
+
 class CustomUser(AbstractUser):
     icon = models.FileField(
         upload_to="users_icons/",
@@ -30,3 +37,19 @@ class CustomUser(AbstractUser):
     weapon = models.ForeignKey(
         Weapon, on_delete=models.SET_NULL, null=True, blank=True
     )
+    character_class = models.ForeignKey(
+        CharacterClass,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+    )
+
+    hp = models.PositiveIntegerField(
+        default=100,
+    )
+    experience = models.PositiveIntegerField(default=0)
+    level = models.PositiveSmallIntegerField(default=1)
+    story = models.TextField(blank=True, default="")
+
+    def __str__(self):
+        return self.username

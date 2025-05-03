@@ -1,12 +1,13 @@
 from drf_spectacular.utils import extend_schema
 from rest_framework import generics, permissions, parsers
 
-from .models import Weapon
+from .models import Weapon, CustomUser, CharacterClass
 from .serializers import (
     UserRegisterSerializer,
     PlayerSerializer,
     PlayerUpdateSerializer,
     WeaponSerializer,
+    CharacterClassSerializer,
 )
 
 
@@ -18,6 +19,7 @@ class RegisterAPIView(generics.CreateAPIView):
 
 @extend_schema(tags=["Игроки"])
 class PlayerMeAPIView(generics.RetrieveUpdateAPIView):
+    queryset = CustomUser.objects.select_related('character_class', 'weapon')
 
     permission_classes = [permissions.IsAuthenticated]
     parser_classes = [
@@ -39,3 +41,8 @@ class PlayerMeAPIView(generics.RetrieveUpdateAPIView):
 class WeaponListAPIView(generics.ListAPIView):
     serializer_class = WeaponSerializer
     queryset = Weapon.objects.all()
+
+
+class CharacterClassListAPIView(generics.ListAPIView):
+    queryset = CharacterClass
+    serializer_class = CharacterClassSerializer

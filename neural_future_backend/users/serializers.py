@@ -1,7 +1,7 @@
 from rest_framework import serializers
 from rest_framework.authtoken.models import Token
 from django.contrib.auth import get_user_model
-from .models import Weapon
+from .models import Weapon, CharacterClass
 
 User = get_user_model()
 
@@ -28,12 +28,27 @@ class UserRegisterSerializer(serializers.ModelSerializer):
         return user
 
 
+class CharacterClassSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = CharacterClass
+        fields = ("id", "name")
+
+
 class PlayerSerializer(serializers.ModelSerializer):
     weapon = WeaponSerializer(read_only=True)
+    character_class = CharacterClassSerializer(read_only=True)
 
     class Meta:
         model = User
-        fields = ("id", "first_name", "icon", "weapon")
+        fields = (
+            "id",
+            "first_name",
+            "icon",
+            "weapon",
+            'hp',
+            'experience',
+            'level',
+        )
 
 
 class PlayerUpdateSerializer(serializers.ModelSerializer):
@@ -42,8 +57,20 @@ class PlayerUpdateSerializer(serializers.ModelSerializer):
         required=False,
         allow_null=True,
     )
+    character_class = serializers.PrimaryKeyRelatedField(
+        queryset=CharacterClass.objects.all(),
+        required=False,
+        allow_null=True,
+    )
     icon = serializers.FileField(required=False, allow_null=True)
 
     class Meta:
         model = User
-        fields = ("icon", "weapon", "first_name")
+        fields = (
+            "first_name",
+            "icon",
+            "weapon",
+            'hp',
+            'experience',
+            'level',
+        )
