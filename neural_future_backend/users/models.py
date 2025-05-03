@@ -6,7 +6,13 @@ from core.validators import SVGOrRasterImageValidator
 
 class Weapon(models.Model):
     name = models.CharField(max_length=100)
-    img = models.FileField(
+    weapon_img = models.FileField(
+        upload_to="weapons/",
+        validators=[SVGOrRasterImageValidator()],
+        null=True,
+        blank=True,
+    )
+    projectile_img = models.FileField(
         upload_to="weapons/",
         validators=[SVGOrRasterImageValidator()],
         null=True,

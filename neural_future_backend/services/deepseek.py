@@ -1,9 +1,8 @@
 from typing import List
+
 from django.conf import settings
 from django.contrib.auth import get_user_model
 from openai import OpenAI
-
-from metrics.models import NNAnswer
 
 User = get_user_model()
 
@@ -51,6 +50,7 @@ def generate_rpg_story(
     story = response.choices[0].message.content.strip()
 
     user = User.objects.get(pk=user_id)
-    NNAnswer.objects.create(user=user, answer=story)
+    user.story = story
+    user.save()
 
     return story
