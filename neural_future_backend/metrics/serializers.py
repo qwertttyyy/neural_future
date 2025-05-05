@@ -3,6 +3,7 @@ from rest_framework import serializers
 
 from metrics.models import UserAnswer
 from npc.models import Location
+from services.deepseek import generate_background_color
 from .tasks import generate_story_task
 
 
@@ -31,6 +32,21 @@ class UserAnswerListSerializer(serializers.ListSerializer):
             pairs.append(f'Q: {question} A: {answer}')
         generate_story_task.delay(user_id=user.id, q_a_pairs=pairs)
         return answers
+
+
+class UserAnswerSingleCreateSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = UserAnswer
+        fields = ('question', 'answer')
+
+    def create(self, validated_data):
+        user = self.context['request'].user
+        question = validated_data['question']
+        answer = validated_data['answer']
+        UserAnswer.objects.update_or_create(
+            user=user, question=question, defaults={'answer': answer}
+        )
+        return generate_background_color(user.id, question.id, answer)
 
 
 class UserAnswerSerializer(serializers.ModelSerializer):

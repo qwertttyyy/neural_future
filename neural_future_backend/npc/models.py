@@ -22,3 +22,10 @@ class Question(models.Model):
 
     def __str__(self):
         return f"Вопрос от '{self.npc.name}' в {self.location.name}: {self.question[:50]}"
+
+
+class AnswerVariant(models.Model):
+    question = models.ForeignKey(
+        Question, on_delete=models.CASCADE, related_name='answers'
+    )
+    variant = models.CharField(max_length=1000)

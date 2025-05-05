@@ -59,3 +59,50 @@ user_answer_create_schema = {
         ),
     },
 }
+
+
+user_answer_single_create_schema = {
+    'summary': 'Ответить на один вопрос',
+    'description': (
+        'Позволяет авторизованному пользователю ответить на **один вопрос**.\n\n'
+        'Если ответ уже существует — он будет обновлён.\n'
+        'Если нет — будет создан новый.\n\n'
+        'В ответ возвращается автоматически сгенерированный цвет фона '
+        'на основе ответов игрока — в формате CSS: `rgb()`, `rgba()` или `linear-gradient()`.\n\n'
+        '**Требуется авторизация.**'
+    ),
+    'examples': [
+        OpenApiExample(
+            name='Пример запроса',
+            summary='Отправка одного ответа',
+            description='Передаётся ID вопроса и текст ответа.',
+            value={
+                "question": 1,
+                "answer": "Я родом из далёких гор.",
+            },
+            request_only=True,
+        ),
+        OpenApiExample(
+            name='Пример успешного ответа',
+            summary='Генерация CSS-цвета',
+            value={
+                "status": "linear-gradient(to right, rgb(34,193,195), rgb(253,187,45))"
+            },
+            response_only=True,
+        ),
+        OpenApiExample(
+            name='Ошибка валидации',
+            summary='Ошибка при неверном ID',
+            value={
+                "question": ["Некорректный ID."],
+            },
+            response_only=True,
+        ),
+    ],
+    'responses': {
+        200: OpenApiResponse(
+            description='Ответ успешно сохранён или обновлён. Возвращён CSS-цвет фона.',
+            response=OpenApiTypes.OBJECT,
+        ),
+    },
+}

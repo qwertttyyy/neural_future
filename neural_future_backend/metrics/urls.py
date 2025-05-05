@@ -3,8 +3,13 @@ from . import views
 
 urlpatterns = [
     path(
-        'user-answer/',
-        views.UserAnswerCreateAPIView.as_view(),
-        name='user-answer',
+        'user-answers/single/',
+        views.UserAnswerSingleCreateAPIView.as_view(),
+        name='user-answer-single',
+    ),
+    path(
+        'user-answers/multiple/',
+        views.UserAnswerBulkCreateAPIView.as_view(),
+        name='user-answer-bulk',
     ),
 ]

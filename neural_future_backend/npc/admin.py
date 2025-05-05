@@ -5,14 +5,14 @@ from npc.models import Location, NPC, Question
 
 @admin.register(Location)
 class LocationAdmin(admin.ModelAdmin):
-    list_display = ('name',)
+    list_display = ('name', 'id')
 
 
 @admin.register(NPC)
 class NPCAdmin(admin.ModelAdmin):
-    list_display = ('name',)
+    list_display = ('name', 'id')
 
 
 @admin.register(Question)
 class QuestionAdmin(admin.ModelAdmin):
-    list_display = ('npc', 'location', 'question')
+    list_display = ('npc', 'location', 'question', 'id')

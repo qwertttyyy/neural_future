@@ -7,4 +7,9 @@ urlpatterns = [
         views.NPCQuestionsByLocationView.as_view(),
         name='npc-questions-by-location',
     ),
+    path(
+        'generate-dialog/',
+        views.GenerateDialogAPIView.as_view(),
+        name='generate-dialog',
+    ),
 ]
