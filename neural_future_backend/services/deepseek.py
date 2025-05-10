@@ -5,9 +5,10 @@ from typing import List, Dict, Any
 from django.conf import settings
 from django.db import transaction
 from openai import OpenAI
+from rest_framework import serializers
 from rest_framework.generics import get_object_or_404
 
-from metrics.models import UserAnswer
+from metrics.models import UserAnswer, SystemPromt
 from npc.models import NPC, Location, Question, AnswerVariant
 from users.models import CustomUser as User
 
@@ -41,7 +42,16 @@ def _deepseek_chat(
     return resp.choices[0].message.content.strip()
 
 
-DEFAULT_SYSTEM_PROMPT = """
+def get_system_promt(promt_name) -> SystemPromt:
+    try:
+        return SystemPromt.objects.get(name=promt_name)
+    except SystemPromt.DoesNotExist:
+        raise serializers.ValidationError(
+            {'detail': f'Необходимо создать промт с именем {promt_name}'}
+        )
+
+
+COLOR_SYSTEM_PROMPT = """
 Ты — нейросеть, которая помогает человеку пройти психологический тест «Дом страхов».
 Суть теста: человек представляет Дом, в котором никогда бы не захотел жить. Через его ответы мы выявляем глубинные страхи и тревоги человека.
 На основе уже данных ответов внимательно проанализируй текущие эмоции, страхи и психологическое состояние человека.
@@ -56,14 +66,7 @@ DEFAULT_SYSTEM_PROMPT = """
 """
 
 
-def generate_background_color(
-    user_id: int, question_id: int, answer: str
-) -> str:
-    """
-    Формирует системный prompt, собирая все предыдущие пары «вопрос: ответ»
-    для того же NPC и локации, и добавляя текущую пару.
-    Возвращает готовую строку с подстановкой в DEFAULT_SYSTEM_PROMPT.
-    """
+def get_prev_answers(user_id, question_id, answer):
     q = get_object_or_404(Question, pk=question_id)
     prev_qs = list(
         Question.objects.filter(
@@ -82,9 +85,33 @@ def generate_background_color(
         if question.id in ua_map
     ]
     lines.append(f"{q.question}: {answer}")
+    return "\n".join(lines)
 
+
+def generate_background_color(
+    user_id: int, question_id: int, answer: str
+) -> str:
+    """
+    Формирует системный prompt, собирая все предыдущие пары «вопрос: ответ»
+    для того же NPC и локации, и добавляя текущую пару.
+    Возвращает готовую строку с подстановкой в DEFAULT_SYSTEM_PROMPT.
+    """
+    pairs = get_prev_answers(user_id, question_id, answer)
+
+    color_system_promt = get_system_promt("color")
     return _deepseek_chat(
-        DEFAULT_SYSTEM_PROMPT, '\n'.join(lines), max_tokens=200
+        color_system_promt.text,
+        pairs,
+        max_tokens=color_system_promt.max_tokens,
+    )
+
+
+def generate_forms(user_id: int, question_id: int, answer: str, body: str):
+    pairs = get_prev_answers(user_id, question_id, answer)
+    forms_system_promt = get_system_promt('forms')
+    system_promt = f'{forms_system_promt.text}\n{pairs}'
+    return _deepseek_chat(
+        system_promt, body, max_tokens=forms_system_promt.max_tokens
     )
 
 

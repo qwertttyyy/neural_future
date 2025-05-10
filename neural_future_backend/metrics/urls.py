@@ -3,9 +3,14 @@ from . import views
 
 urlpatterns = [
     path(
-        'user-answers/single/',
-        views.UserAnswerSingleCreateAPIView.as_view(),
+        'user-answers/single/color/',
+        views.UserAnswerSingleColorCreateAPIView.as_view(),
         name='user-answer-single',
+    ),
+    path(
+        'user-answers/single/forms/',
+        views.UserAnswerSingleFormsCreateAPIView.as_view(),
+        name='user-answer-single-forms',
     ),
     path(
         'user-answers/multiple/',

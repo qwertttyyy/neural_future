@@ -7,10 +7,12 @@ from metrics.models import UserAnswer
 from metrics.schemas import (
     user_answer_create_schema,
     user_answer_single_create_schema,
+    generate_form_schema,
 )
 from metrics.serializers import (
     UserAnswerSerializer,
-    UserAnswerSingleCreateSerializer,
+    UserAnswerSingleColorCreateSerializer,
+    FormsSerializer,
 )
 
 
@@ -33,12 +35,24 @@ class UserAnswerBulkCreateAPIView(generics.CreateAPIView):
 
 
 @extend_schema(tags=['Ответы'], **user_answer_single_create_schema)
-class UserAnswerSingleCreateAPIView(generics.CreateAPIView):
+class UserAnswerSingleColorCreateAPIView(generics.CreateAPIView):
     permission_classes = (IsAuthenticated,)
-    serializer_class = UserAnswerSingleCreateSerializer
+    serializer_class = UserAnswerSingleColorCreateSerializer
 
     def create(self, request, *args, **kwargs):
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         result = serializer.save()
         return Response({"color": result}, status=status.HTTP_200_OK)
+
+
+@extend_schema(tags=['Ответы'], **generate_form_schema)
+class UserAnswerSingleFormsCreateAPIView(generics.CreateAPIView):
+    serializer_class = FormsSerializer
+    permission_classes = (IsAuthenticated,)
+
+    def create(self, request, *args, **kwargs):
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        result = serializer.save()
+        return Response({"forms": result}, status=status.HTTP_200_OK)
