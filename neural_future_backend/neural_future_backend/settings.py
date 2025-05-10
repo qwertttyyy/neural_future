@@ -136,6 +136,8 @@ CELERY_BROKER_URL = f'redis://redis:6379/0'
 CELERY_RESULT_BACKEND = f'redis://redis:6379/0'
 
 
-DEEPSEEK_API_KEY = os.getenv('DEEPSEEK_API_KEY', 'asd')
+DEEPSEEK_API_KEY = os.getenv(
+    'DEEPSEEK_API_KEY',
+)
 if not DEEPSEEK_API_KEY:
     raise ValueError("DEEPSEEK_API_KEY must be set")

@@ -105,9 +105,7 @@ def generate_background_color(
     )
 
 
-def generate_forms(
-    user_id: int, question_id: int, answer: str, body: str = ''
-):
+def generate_forms(user_id: int, question_id: int, answer: str, body: str):
     pairs = get_prev_answers(user_id, question_id, answer)
     forms_system_promt = get_system_promt('forms')
     system_promt = f'{forms_system_promt.text}\n{pairs}'
