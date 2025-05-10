@@ -112,7 +112,7 @@ def generate_forms(
     forms_system_promt = get_system_promt('forms')
     system_promt = f'{forms_system_promt.text}\n{pairs}'
     return _deepseek_chat(
-        system_promt, body, max_tokens=forms_system_promt.max_tokens
+        system_promt, body, True, max_tokens=forms_system_promt.max_tokens
     )
 
 
