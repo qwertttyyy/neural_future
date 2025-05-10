@@ -126,7 +126,7 @@ generate_form_schema = {
             description='Передаётся ID вопроса, ответ и текстовое описание (body), которое влияет на генерацию.',
             value={
                 "question": 1,
-                "answer": "Я хранитель рун древнего леса.",
+                "answer": "Мне грустно",
                 "body": "JSON",
             },
             request_only=True,

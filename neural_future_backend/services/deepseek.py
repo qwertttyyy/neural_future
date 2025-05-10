@@ -7,6 +7,7 @@ from django.db import transaction
 from openai import OpenAI
 from rest_framework import serializers
 from rest_framework.generics import get_object_or_404
+from twisted.web.html import output
 
 from metrics.models import UserAnswer, SystemPromt
 from npc.models import NPC, Location, Question, AnswerVariant
@@ -55,6 +56,15 @@ def _deepseek_chat(
     return resp.choices[0].message.content.strip()
 
 
+def _strip_code_block(s: str) -> str:
+    """
+    Убирает markdown-фехинг ```...``` вокруг JSON.
+    """
+    pattern = r"```(?:json)?\s*\n([\s\S]+?)\n```"
+    m = re.search(pattern, s)
+    return m.group(1) if m else s
+
+
 def get_system_promt(promt_name) -> SystemPromt:
     try:
         return SystemPromt.objects.get(name=promt_name)
@@ -62,21 +72,6 @@ def get_system_promt(promt_name) -> SystemPromt:
         raise serializers.ValidationError(
             {'detail': f'Необходимо создать промт с именем {promt_name}'}
         )
-
-
-COLOR_SYSTEM_PROMPT = """
-Ты — нейросеть, которая помогает человеку пройти психологический тест «Дом страхов».
-Суть теста: человек представляет Дом, в котором никогда бы не захотел жить. Через его ответы мы выявляем глубинные страхи и тревоги человека.
-На основе уже данных ответов внимательно проанализируй текущие эмоции, страхи и психологическое состояние человека.
-Теперь выбери и верни одно единственное значение, которое наиболее точно отразит эмоциональное состояние человека после его последнего ответа. Это значение должно быть строкой для использования в CSS-свойстве background-color.
-Правила для генерации значения:
-Формат: rgb(), rgba() или linear-gradient()
-Выбирай цвета осмысленно, исходя из текущего психологического состояния, отраженного в ответах:
-Темные, мрачные, холодные оттенки для глубокого страха, тревоги или негативных эмоций.
-Смешанные или переходные градиенты для неопределённости или смешанных чувств.
-Более светлые или теплые оттенки, если страхи поверхностны или слабо выражены.
-Верни только строку CSS-свойства background-color без дополнительного текста и комментариев.
-"""
 
 
 def get_prev_answers(user_id, question_id, answer):
@@ -122,21 +117,14 @@ def generate_forms(user_id: int, question_id: int, answer: str, body: str):
     pairs = get_prev_answers(user_id, question_id, answer)
     forms_system_promt = get_system_promt('forms')
     system_promt = f'{forms_system_promt.text}\n{pairs}'
-    return _deepseek_chat(
+    output = _deepseek_chat(
         system_promt,
         body,
         model='reasoner',
         max_tokens=forms_system_promt.max_tokens,
     )
-
-
-def _strip_code_block(s: str) -> str:
-    """
-    Убирает markdown-фехинг ```...``` вокруг JSON.
-    """
-    pattern = r"```(?:json)?\s*\n([\s\S]+?)\n```"
-    m = re.search(pattern, s)
-    return m.group(1) if m else s
+    output = _strip_code_block(output)
+    return output
 
 
 # ─────────────────────── генерация истории ──────────────────────
