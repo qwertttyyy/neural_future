@@ -57,11 +57,15 @@ class UserAnswerSerializer(serializers.ModelSerializer):
 
 
 class FormsSerializer(serializers.ModelSerializer):
-    body = serializers.CharField(required=True)
+    # body = serializers.CharField(required=True)
 
     class Meta:
         model = UserAnswer
-        fields = ('question', 'answer', 'body')
+        fields = (
+            'question',
+            'answer',
+            # 'body'
+        )
 
     def create(self, validated_data):
         user = self.context['request'].user
@@ -71,5 +75,8 @@ class FormsSerializer(serializers.ModelSerializer):
             user=user, question=question, defaults={'answer': answer}
         )
         return generate_forms(
-            user.id, question.id, answer, validated_data['body']
+            user.id,
+            question.id,
+            answer,
+            # validated_data['body']
         )
