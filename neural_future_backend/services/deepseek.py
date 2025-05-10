@@ -20,25 +20,38 @@ client = OpenAI(
 
 # ─────────────────────────── helpers ────────────────────────────
 def _deepseek_chat(
-    system_promt, user_promt, json_output=False, *, max_tokens: int = 400
+    system_prompt: str,
+    user_prompt: str,
+    *,
+    model: str = "chat",  # "chat" | "reasoner"
+    json_output: bool = False,
+    max_tokens: int = 400,
 ) -> str:
-    messages = [
-        {"role": "system", "content": system_promt},
-        {"role": "user", "content": user_promt},
-    ]
-    params = {
-        'model': "deepseek-chat",
-        'messages': messages,
-        'temperature': 0.9,
-        'max_tokens': max_tokens,
-    }
-    if json_output:
-        params['response_format'] = {'type': 'json_object'}
+    if model not in {"chat", "reasoner"}:
+        raise ValueError("model must be 'chat' or 'reasoner'")
 
-    """Единая точка обращения к DeepSeek."""
-    resp = client.chat.completions.create(
-        **params,
+    model_name = (
+        "deepseek-reasoner" if model == "reasoner" else "deepseek-chat"
     )
+
+    messages = [
+        {"role": "system", "content": system_prompt},
+        {"role": "user", "content": user_prompt},
+    ]
+
+    params = {
+        "model": model_name,
+        "messages": messages,
+        "max_tokens": max_tokens,
+    }
+
+    if json_output and model != "reasoner":
+        params["response_format"] = {"type": "json_object"}
+
+    if model == "chat":
+        params["temperature"] = 0.9
+
+    resp = client.chat.completions.create(**params)
     return resp.choices[0].message.content.strip()
 
 
@@ -110,7 +123,10 @@ def generate_forms(user_id: int, question_id: int, answer: str, body: str):
     forms_system_promt = get_system_promt('forms')
     system_promt = f'{forms_system_promt.text}\n{pairs}'
     return _deepseek_chat(
-        system_promt, body, True, max_tokens=forms_system_promt.max_tokens
+        system_promt,
+        body,
+        model='reasoner',
+        max_tokens=forms_system_promt.max_tokens,
     )
 
 
